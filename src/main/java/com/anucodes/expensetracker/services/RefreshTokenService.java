@@ -22,7 +22,7 @@ public class RefreshTokenService {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${jwt.expiration}")
+    @Value("${refreshtoken.expiration}")
     private Long expiration;
 
     //Function to create the refreshtoken
