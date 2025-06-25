@@ -25,7 +25,7 @@ public class RefreshTokenService {
     @Value("${refreshtoken.expiration}")
     private Long expiration;
 
-    //Function to create the refreshtoken
+    //Function to create the refresh token
     public RefreshToken createRefreshToken(String username){
         UserInfo userInfo = userRepository.findByUsername(username);
         RefreshToken refreshToken;

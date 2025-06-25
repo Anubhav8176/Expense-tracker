@@ -7,6 +7,8 @@ import com.anucodes.expensetracker.entities.UserInfo;
 import com.anucodes.expensetracker.model.ExpenseDto;
 import com.anucodes.expensetracker.repository.ExpenseRepository;
 import com.anucodes.expensetracker.repository.UserRepository;
+import com.anucodes.expensetracker.request.ExpenseByPayment;
+import com.anucodes.expensetracker.request.GetExpense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,10 +92,10 @@ public class ExpenseService {
     }
 
     //Filter by Payment Method
-    public List<ExpenseDto> filterByPaymentMethod(String paymentMethod){
+    public List<ExpenseDto> filterByPaymentMethod(GetExpense paymentMethod){
         try{
             List<ExpenseDto> returnList = new ArrayList<>();
-            List<Expense> expenses = expenseRepository.getAllByPaymentMethod(paymentMethod);
+            List<Expense> expenses = expenseRepository.getAllByPaymentMethod(paymentMethod.getQuery());
             System.out.println(expenses);
             for (Expense e : expenses) {
                 ExpenseDto expIndi = ExpenseDto.builder()
@@ -104,7 +106,9 @@ public class ExpenseService {
                         .paymentMethod(e.getPaymentMethod())
                         .build();
 
-                returnList.add(expIndi);
+                if(paymentMethod.getUsername().equals(e.getUserInfo().getUsername())){
+                    returnList.add(expIndi);
+                }
             }
             return returnList;
         } catch (Exception e) {
@@ -113,10 +117,10 @@ public class ExpenseService {
     }
 
     //Filter by Category
-    public List<ExpenseDto> filterByCategory(String category){
+    public List<ExpenseDto> filterByCategory(GetExpense category){
         try{
             List <ExpenseDto> returnList = new ArrayList<>();
-            List<Expense> expenses = expenseRepository.getAllByCategory(category);
+            List<Expense> expenses = expenseRepository.getAllByCategory(category.getQuery());
             for (Expense e : expenses) {
                 ExpenseDto expIndi = ExpenseDto.builder()
                         .amount(e.getAmount())
@@ -126,7 +130,9 @@ public class ExpenseService {
                         .paymentMethod(e.getPaymentMethod())
                         .build();
 
-                returnList.add(expIndi);
+                if(category.getUsername().equals(e.getUserInfo().getUsername())){
+                    returnList.add(expIndi);
+                }
             }
             return returnList;
         } catch (Exception e) {
@@ -135,11 +141,11 @@ public class ExpenseService {
     }
 
     //Filter by Amount
-    public List<ExpenseDto> filterByAmount(Integer upperLimit, Integer lowerLimit){
+    public List<ExpenseDto> filterByAmount(ExpenseByPayment payment){
         try {
             List<ExpenseDto> finalList = new ArrayList<>();
 
-            List<Expense> fromRepo = expenseRepository.getAllByAmountBetween(upperLimit, lowerLimit);
+            List<Expense> fromRepo = expenseRepository.getAllByAmountBetween(payment.getUpperLimit(), payment.getLowerLimit());
 
             for (Expense e : fromRepo) {
                 ExpenseDto expIndi = ExpenseDto.builder()
@@ -150,7 +156,9 @@ public class ExpenseService {
                         .paymentMethod(e.getPaymentMethod())
                         .build();
 
-                finalList.add(expIndi);
+                if(e.getUserInfo().getUsername().equals(payment.getUsername())){
+                    finalList.add(expIndi);
+                }
             }
 
             return finalList;

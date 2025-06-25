@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfoDto {
-    private String userId;
     private String username;
     private String password;
     private String name;

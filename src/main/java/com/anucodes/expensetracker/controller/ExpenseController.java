@@ -3,7 +3,9 @@ package com.anucodes.expensetracker.controller;
 
 
 import com.anucodes.expensetracker.model.ExpenseDto;
+import com.anucodes.expensetracker.request.ExpenseByPayment;
 import com.anucodes.expensetracker.request.ExpenseRequest;
+import com.anucodes.expensetracker.request.GetExpense;
 import com.anucodes.expensetracker.services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,9 +56,9 @@ public class ExpenseController {
     }
 
     @GetMapping("/get-by-category")
-    public ResponseEntity expensesByCategory(@RequestParam String category){
+    public ResponseEntity expensesByCategory(@RequestBody GetExpense category){
         try{
-            if (category.isEmpty()){
+            if (category.getQuery().isEmpty()){
                 return new ResponseEntity("Category cannot be empty!", HttpStatus.BAD_REQUEST);
             }else{
                 List<ExpenseDto> categoryList = expenseService.filterByCategory(category);
@@ -68,9 +70,9 @@ public class ExpenseController {
     }
 
     @GetMapping("/get-by-payment")
-    public ResponseEntity expenseByPayment(@RequestParam String payment){
+    public ResponseEntity expenseByPayment(@RequestBody GetExpense payment){
         try{
-            if (payment.isEmpty()){
+            if (payment.getQuery().isEmpty()){
                 return new ResponseEntity("Payment cannot be empty!", HttpStatus.BAD_REQUEST);
             }else{
                 List<ExpenseDto> paymentList = expenseService.filterByPaymentMethod(payment);
@@ -82,12 +84,12 @@ public class ExpenseController {
     }
 
     @GetMapping("/get-by-amount")
-    public ResponseEntity expenseByAmount(@RequestParam Integer upperLimit, @RequestParam Integer lowerLimit){
+    public ResponseEntity expenseByAmount(@RequestBody ExpenseByPayment expenseByPayment){
         try {
-            if (upperLimit==-1 || lowerLimit==-1){
+            if (expenseByPayment.getUpperLimit()==-1 || expenseByPayment.getLowerLimit()==-1){
                 return new ResponseEntity<>("There must be a upperLimit and lowerLimit.", HttpStatus.BAD_REQUEST);
             }
-            List<ExpenseDto> expenseList = expenseService.filterByAmount(upperLimit, lowerLimit);
+            List<ExpenseDto> expenseList = expenseService.filterByAmount(expenseByPayment);
             return new ResponseEntity<>(expenseList, HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
